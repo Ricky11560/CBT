@@ -1,0 +1,527 @@
+    
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Examination</title>
+    <link rel="stylesheet" href="style.css">
+
+
+
+    <style>
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+
+.screen {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+    display: none; /* All screens are hidden by default */
+}
+
+
+.screen.active {
+    display: block; /* Only the active screen is visible */
+}
+
+#login-form label,
+#login-form input,
+#login-form button {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+
+#login-form input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+
+.screen{
+         width:70% ;
+
+}
+
+.logo-header{
+   display: flex;
+   flex-direction: row;
+   margin-bottom: 20px;
+
+}
+
+   
+        @media (max-width:700px){
+
+            .logo-header{
+   display: flex;
+   flex-direction: row;
+   margin-bottom: 20px;
+   background-color: #0ceb40;
+   border-radius:30px ;
+
+}
+
+
+} 
+
+
+.logo{
+    width:70px ;  
+    margin-right: 70px;
+    display: flex; 
+}
+
+
+ 
+        @media (max-width:700px){
+
+ .logo{
+    width:70px ;  
+    margin-right: 50px;
+    display: flex; 
+}
+
+
+
+} 
+
+.question-card {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.question-card p {
+    font-weight: bold;
+    margin-top: 0;
+}
+.option-group label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+#results-screen {
+    text-align: center;
+}
+
+#final-score {
+    font-size: 2em;
+    color: #28a745;
+    font-weight: bold;
+}
+
+
+
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="screen active">
+      <div class="logo-header"
+      >
+        <img src="IMG_4660.PNG" alt="" class="logo">
+        <h2 style="color: gold;">Student Login</h2>
+      </div>  
+        <form id="login-form">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required >
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" required >
+
+            <button type="submit" style="color: white; background-color: #0ceb40;" >Login</button>
+            <p id="login-message" class="error"></p>
+        </form>
+    </div>
+
+    <div id="pre-exam-screen" class="screen">
+         <div class="logo-header"
+      >
+        <img src="IMG_4660.PNG" alt="" class="logo">
+        <h2 style="color: gold;"> CBT Instructions</h2>
+      </div>  
+              
+        <p>This exam consists of 18 questions. You have **15 minute** to complete the exam. Your score will be displayed immediately upon submission or when the time runs out.</p>
+        <button id="start-exam-btn" style="background-color:#0ceb40;">Start Examination</button>
+    </div>
+
+    <div id="exam-screen" class="screen">
+        <div id="header">
+            <span id="timer">Time Left: **15:00**</span>
+            <img src="IMG_4660.PNG" alt="" style="width: 45px;">
+
+            <span id="student-info">Welcome, Student!</span>
+        </div>
+        <div id="questions-container">
+            </div>
+        <button id="submit-exam-btn" disabled style="background-color:#0ceb40;">Submit Examination</button>
+    </div>
+
+    <div id="results-screen" class="screen">
+             <img src="IMG_4660.PNG" alt="" class="logo">
+        <h2>Examination Results</h2>
+        <p>Congratulations, Student!</p>
+        <p>Your Score: <span id="final-score">0</span> / <span id="total-questions">0</span></p>
+        <p id="result-message"></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+<script>
+   // --- 1. Global Data ---
+
+const VALID_USER = { username: "student", password: "123" };
+const EXAM_DURATION_SECONDS = 900; // 1 minute for the demo
+let timerInterval;
+let timeRemaining = EXAM_DURATION_SECONDS;
+let totalQuestions = 0;
+
+// Question data structure: text, options (A-D), and the correct answer index (0, 1, 2, or 3)
+const ALL_QUESTIONS = [
+     
+
+    {
+        text: "Odionwere",
+        options: ["The dancing antelope", "Queen Iden ", "Rainbows without colours ", "Non of the above"],
+        answerIndex: 1
+    },
+     {
+        text: "Dosu",
+        options: ["Queen Iden", "Akpomedaye", "Rainbow without colours", "Dancing Antelope"],
+        answerIndex: 1
+    },
+     {
+        text: "Where did Oba Ewuakpe curse?",
+        options: ["Ikoka", "Ubini", "Edo", "Palace"],
+        answerIndex: 0
+    },
+     {
+        text: "------- and Precious",
+        options: ["Princely", "Precious", "Presley", "Princess"],
+        answerIndex: 2
+    },
+     {
+        text: "Who had issues with his wife?",
+        options: ["Ogiemele", "Oba Ewuakpe", "Omoluabi", "Akpomedaye"],
+        answerIndex: 0
+    },
+    {
+        text: "Who is the Authur of 'The story of the Dancing Antelope'?",
+        options: ["Oliver M. Iluebe", "John O. Ologbo", "Jeneru Musa", "Willy-Egle Nora"],
+        answerIndex: 2
+    },
+    {
+        text: "Oliver M. Iluebe",
+        options: ["Rainbow Without Colours", "The Dancing Antelope", "Queen Iden", "Akpomedaye"],
+        answerIndex: 0
+    },
+    {
+        text: "Translate 'Otio!'",
+        options: ["Come and see", "Dance again", "Welcome", " It’s impossible"],
+        answerIndex: 3
+    },
+    {
+        text: "Rev. Odia, Olere, Eshiogia, David ",
+        options: ["Akpomedaye the rejected stone", "Queen Idia", "Rainbows without colours", "Non of the above"],
+        answerIndex: 2
+    },
+     {
+        text: "Olori Adunni, Wajo, Olajokokoro, Princess Moriola",
+        options: ["The dancing antelope", "Queen Idia", "Queen Iden", "Rainbows without colours"],
+        answerIndex: 0
+    },
+     {
+        text: "What was the real name of the Dancing Antelope",
+        options: ["Wajo", "Princess Moriola", "Omoluabi", "Non of the above"],
+        answerIndex: 1
+    },
+
+     {
+        text: "Who Sacrificed her Life for the Palace",
+        options: ["Olori Adunni", "Lor lor Chisindi", "Queen Idia", "Queen Iden"],
+        answerIndex: 3
+    },
+     {
+        text: "John O. Ologbo",
+        options: ["Akpomedaye the rejected stone", "Queen Idia", "Rainbows without colours", "Non of the above"],
+        answerIndex: 0
+    },
+     {
+        text: "Who Casted Oba Ewuakpe in Pss school Play",
+        options: ["Aboy", "Chiboy", "David", "Chisom Chibuike"],
+        answerIndex: 3
+    },
+     {
+        text: "Who casted Precious and Presley Mother during the class reading",
+        options: ["Happiness", "Ogechi", "Blessing", "Chinaza"],
+        answerIndex: 3
+    }
+    ,
+     {
+        text: "Who casted Queen Idia",
+        options: ["Happiness", "Ogechi", "Blessing", "Non of the Above"],
+        answerIndex: 3
+    }
+    ,
+     {
+        text: "We Express Literature through Writing and Reading",
+        options: ["True", "False", "All of the Above", "Non of the Above"],
+        answerIndex: 0
+    }
+    ,
+     {
+        text: "Which Date is the School Cultural Date?",
+        options: ["31", "13", "20", "30"],
+        answerIndex: 0
+    }
+];
+
+let shuffledQuestions = [];
+
+
+// --- 2. Utility Functions ---
+
+/**
+ * Shuffles an array using the Fisher-Yates algorithm.
+ * @param {Array} array - The array to shuffle.
+ * @returns {Array} The shuffled array.
+ */
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // Swap
+    }
+    return array;
+}
+
+/**
+ * Switches the displayed screen.
+ * @param {string} targetId - The ID of the screen to activate.
+ */
+function showScreen(targetId) {
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+    document.getElementById(targetId).classList.add('active');
+}
+
+// --- 3. Login Logic ---
+
+document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const usernameInput = document.getElementById('username').value;
+    const passwordInput = document.getElementById('password').value;
+    const message = document.getElementById('login-message');
+
+    if (usernameInput === VALID_USER.username && passwordInput === VALID_USER.password) {
+        // Successful login
+        message.textContent = "";
+        document.getElementById('student-info').textContent = `Welcome, ${usernameInput}!`;
+        showScreen('pre-exam-screen');
+    } else {
+        // Failed login
+        message.textContent = "Invalid Username or Password. Try 'student' and '123'.";
+    }
+});
+
+
+// --- 4. Exam Setup and Display Logic ---
+
+function loadQuestions() {
+    // 1. Shuffle the questions
+    shuffledQuestions = shuffleArray([...ALL_QUESTIONS]);
+    totalQuestions = shuffledQuestions.length;
+    
+    const container = document.getElementById('questions-container');
+    container.innerHTML = ''; // Clear previous questions
+    
+    // 2. Build the HTML for each question
+    shuffledQuestions.forEach((q, qIndex) => {
+        const questionHtml = `
+            <div class="question-card">
+                <p>Q${qIndex + 1}: ${q.text}</p>
+                <div class="option-group" data-question-index="${qIndex}">
+                    ${q.options.map((option, oIndex) => `
+                        <label>
+                            <input type="radio" name="question-${qIndex}" value="${oIndex}">
+                            ${String.fromCharCode(65 + oIndex)}. ${option}
+                        </label>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        container.innerHTML += questionHtml;
+    });
+    
+    // Enable the submit button once questions are loaded
+    document.getElementById('submit-exam-btn').disabled = false;
+}
+
+document.getElementById('start-exam-btn').addEventListener('click', function() {
+    loadQuestions(); // Setup questions and shuffle
+    showScreen('exam-screen');
+    startTimer();
+});
+
+
+// --- 5. Timer Logic ---
+
+// 1. Define the duration (20 minutes * 60 seconds)
+
+
+function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+}
+
+function startTimer() {
+    timeRemaining = EXAM_DURATION_SECONDS;
+    const timerElement = document.getElementById('timer');
+    
+    timerElement.innerHTML = `Time Left: **${formatTime(timeRemaining)}**`;
+
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        timerElement.innerHTML = `Time Left: **${formatTime(timeRemaining)}**`;
+
+        // Change color to red when 5 minutes (300 seconds) remain
+        if (timeRemaining <= 300) { 
+            timerElement.style.color = 'red';
+        }
+        
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! The examination will now be submitted.");
+            submitExam();
+        }
+    }, 1000); 
+}
+
+
+// --- 6. Submission and Grading Logic ---
+
+function submitExam() {
+    // Stop the timer immediately
+    clearInterval(timerInterval);
+    
+    let score = 0;
+    
+    // Loop through each shuffled question to grade it
+    shuffledQuestions.forEach((q, qIndex) => {
+        // Find the selected radio button for this question
+        const selectedOption = document.querySelector(`input[name="question-${qIndex}"]:checked`);
+        
+        if (selectedOption) {
+            // Get the value (which is the option index: 0, 1, 2, or 3)
+            const studentAnswerIndex = parseInt(selectedOption.value);
+            
+            // Check if the student's selected index matches the correct answer index
+            if (studentAnswerIndex === q.answerIndex) {
+                score++;
+            }
+        }
+        
+        // Optional: Disable all inputs to prevent further changes
+        document.querySelectorAll(`#questions-container input[name="question-${qIndex}"]`).forEach(input => {
+            input.disabled = true;
+        });
+    });
+    
+    // Display results
+    displayResults(score);
+}
+
+document.getElementById('submit-exam-btn').addEventListener('click', submitExam);
+
+function displayResults(score) {
+    document.getElementById('final-score').textContent = score;
+    document.getElementById('total-questions').textContent = totalQuestions;
+    
+    let message = "";
+    const percentage = (score / totalQuestions) * 100;
+
+    if (percentage >= 80) {
+        message = "Excellent job! You passed with flying colors.";
+    } else if (percentage >= 50) {
+        message = "Good effort! You passed.";
+    } else {
+        message = "You did not pass. Review the material and try again!";
+    }
+    
+    document.getElementById('result-message').textContent = message;
+
+    showScreen('results-screen');
+}
+
+// --- 7. Initial Setup ---
+// Ensure only the login screen is visible on load
+document.addEventListener('DOMContentLoaded', () => {
+    showScreen('login-screen');
+});
+
+
+
+</script>
+
+</body>
+</html>
