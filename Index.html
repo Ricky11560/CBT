@@ -230,7 +230,7 @@ button:disabled {
    // --- 1. Global Data ---
 
 const VALID_USER = { username: "student", password: "123" };
-const EXAM_DURATION_SECONDS = 900; // 1 minute for the demo
+const EXAM_DURATION_SECONDS = 600; // 1 minute for the demo
 let timerInterval;
 let timeRemaining = EXAM_DURATION_SECONDS;
 let totalQuestions = 0;
@@ -296,7 +296,7 @@ const ALL_QUESTIONS = [
         answerIndex: 0
     },
     {
-        text: "Simile: He runs like lightning during football.",
+        text: "He runs like lightning during football.",
         options: ["Alliteration", "Conjuction", "Simile", "Hypebole"],
         answerIndex: 2
     },
